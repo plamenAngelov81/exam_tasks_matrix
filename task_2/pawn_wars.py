@@ -1,28 +1,3 @@
-def check_if_can_capture(coordinates_attacker, coordinates_defender):
-    row_a = coordinates_attacker[0]
-    col_a = coordinates_attacker[1]
-    row_d = coordinates_defender[0]
-    col_d = coordinates_defender[1]
-    if row_a - 1 >= 0 and col_a - 1 >= 0:
-        if row_a - 1 == row_d and col_a - 1 == col_d:
-            return [row_a - 1, col_a - 1]
-    if row_a - 1 >= 0 and col_a + 1 < 8:
-        if row_a - 1 == row_d and col_a + 1 == col_d:
-            return [row_a - 1, col_a + 1]
-    if row_a + 1 < 8 and col - 1 >= 0:
-        if row_a + 1 == row_d and col_a - 1 == col_d:
-            return [row_a + 1, col_a - 1]
-    if row_a + 1 < 8 and col + 1 < 8:
-        if row_a + 1 == row_d and col_a + 1 == col_d:
-            return [row_a + 1, col_a + 1]
-
-
-matrix = []
-for _ in range(8):
-    matrix.append(input().split())
-
-white_pawn_coordinates = []
-black_pawn_coordinates = []
 
 position_row = {
     0: "8",
@@ -45,36 +20,52 @@ positions_col = {
     7: "h",
 }
 
-for row in range(8):
-    for col in range(8):
-        if matrix[row][col] == "w":
-            white_pawn_coordinates = [row, col]
-        if matrix[row][col] == "b":
-            black_pawn_coordinates = [row, col]
+size = 8
+board = []
+white_row = 0
+white_col = 0
+black_row = 0
+black_col = 0
 
-for _ in range(8):
-    capture_on = check_if_can_capture(white_pawn_coordinates, black_pawn_coordinates)
-    if capture_on:
-        position = positions_col[capture_on[1]] + position_row[capture_on[0]]
-        print(f"Game over! White win, capture on {position}.")
+for row in range(size):
+    current_row = input().split(" ")
+    for col in range(size):
+        if current_row[col] == "w":
+            white_row = row
+            white_col = col
+        elif current_row[col] == "b":
+            black_row = row
+            black_col = col
+    board.append(current_row)
+
+while True:
+    if white_row == 0:
+        print(f"Game over! White pawn is promoted to a queen at {positions_col[white_col]}{position_row[white_row]}.")
         break
+    elif white_row > 0:
+        if white_col - 1 >= 0:
+            if board[white_row - 1][white_col - 1] == "b":
+                print(f"Game over! White win, capture on {positions_col[black_col]}{position_row[black_row]}.")
+                break
+        if white_col + 1 < size:
+            if board[white_row - 1][white_col + 1] == "b":
+                print(f"Game over! White win, capture on {positions_col[black_col]}{position_row[black_row]}.")
+                break
+    white_row -= 1
+    board[white_row][white_col] = "w"
 
-    white_pawn_coordinates[0] -= 1
-
-    if white_pawn_coordinates[0] == 0:
-        position = positions_col[white_pawn_coordinates[1]] + position_row[white_pawn_coordinates[0]]
-        print(f"Game over! White pawn is promoted to a queen at {position}.")
+    if black_row == size - 1:
+        print(f"Game over! Black pawn is promoted to a queen at {positions_col[black_col]}{position_row[black_row]}.")
         break
-
-    capture_on = check_if_can_capture(black_pawn_coordinates, white_pawn_coordinates)
-    if capture_on:
-        position = positions_col[capture_on[1]] + position_row[capture_on[0]]
-        print(f"Game over! Black win, capture on {position}.")
-        break
-
-    black_pawn_coordinates[0] += 1
-
-    if black_pawn_coordinates[0] == 7:
-        position = positions_col[black_pawn_coordinates[1]] + position_row[black_pawn_coordinates[0]]
-        print(f"Game over! Black pawn is promoted to a queen at {position}.")
-        break
+    elif black_row < size:
+        board[black_row][black_col] = "b"
+        if black_col - 1 >= 0:
+            if board[black_row + 1][black_col - 1] == "w":
+                print(f"Game over! Black win, capture on {positions_col[white_col]}{position_row[white_row]}.")
+                break
+        if black_col + 1 < size:
+            if board[black_row + 1][black_col + 1] == "w":
+                print(f"Game over! Black win, capture on {positions_col[white_col]}{position_row[white_row]}.")
+                break
+    black_row += 1
+    board[black_row][black_col] = "b"
